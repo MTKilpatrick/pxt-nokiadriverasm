@@ -94,7 +94,7 @@ sendNokiaBufferAsm:
 .stop:
     nop
     nop
-    mov r3, r12     ; prepare r3 for clock low      ; C1 
+    mov r3, r11   ; prepare r3 for clock low      ; C1 
     str r1, [r3, #0]    ; clock pin := lo
 
     pop {r4,r5,r6,r7,pc}
