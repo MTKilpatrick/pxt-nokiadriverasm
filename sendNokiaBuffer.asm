@@ -65,7 +65,7 @@ sendNokiaBufferAsm:
     mov r3, r11     ; prepare r3 for clock low      ; C1 
     str r1, [r3, #0]    ; clock pin := lo
     movs r2, #128
-    lsls r2, r2, #16
+    lsls r2, r2, #18
 .del1:
     subs r2, #32
     bne .del1
@@ -82,7 +82,7 @@ sendNokiaBufferAsm:
     mov r3, r12     ; get the setaddr for clock     ; C1 
     str r1, [r3, #0]    ; clock pin := high             ; C2
     movs r2, #128
-    lsls r2, r2, #16
+    lsls r2, r2, #18
 .del2:
     subs r2, #32
     bne .del2
