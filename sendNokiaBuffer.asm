@@ -52,6 +52,7 @@ sendNokiaBufferAsm:
     ; STATUS:
     ; r0    loaded with buffer data
     ; r1    mask byte for clock pin
+    ; r2    address for set clock low
     ; r3    used for temp storage of clr/set addr for pins
     ; r4    buffer address
     ; r5    counter
@@ -61,14 +62,12 @@ sendNokiaBufferAsm:
 .start:
     movs r7, #0x80      ; reset mask 
     ldrb r0, [r4, #0]  ; r0 := *r4               ; C2
-.common:                      
-    mov r3, r11     ; prepare r3 for clock low      ; C1 
-    str r1, [r3, #0]    ; clock pin := lo
-    movs r2, #128
-    lsls r2, r2, #18
-.del1:
-    subs r2, #32
-    bne .del1
+.common:
+    str r1, [r2, #0]    ; clock pin := lo
+    nop
+    nop
+    nop
+    nop
 	mov r3, r9      ; get the setaddr for datapin   ; C1
     tst r7, r0     
     bne .nextone                                    ; C1 + p
@@ -81,11 +80,14 @@ sendNokiaBufferAsm:
     nop
     mov r3, r12     ; get the setaddr for clock     ; C1 
     str r1, [r3, #0]    ; clock pin := high             ; C2
-    movs r2, #128
-    lsls r2, r2, #18
-.del2:
-    subs r2, #32
-    bne .del2
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
     lsrs r7, r7, #1     ; r6 >>= 1   C7             ; C1
     bne .common       ;            C8             ; C1 + p
     ; not just a bit - need new byte
