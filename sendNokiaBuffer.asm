@@ -91,7 +91,7 @@ sendNokiaBufferAsm:
     ; not just a bit - need new byte
     adds r4, #1         ; r4++       C9
     subs r5, #1         ; r5--       C10
-    bcs .start           ; if (r5>=0) goto .start  C11
+    bne .start           ; if (r5>=0) goto .start  C11
 
 .stop:
     nop
