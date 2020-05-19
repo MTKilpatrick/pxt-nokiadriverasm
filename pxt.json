@@ -16,7 +16,6 @@
     "supportedTargets": [
         "microbit"
     ],
-    "preferredEditor": "tsprj",
     "yotta": {
         "config": {
             "microbit-dal": {
