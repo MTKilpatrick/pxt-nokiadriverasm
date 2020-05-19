@@ -38,6 +38,8 @@ sendNokiaBufferAsm:
     ldr r2, [r0, #16] ; r2-clraddr
     ldr r3, [r0, #12] ; r3-setaddr
 
+    b. start
+
     ; REGISTERS:
     ; r0    to bloaded with buffer data
     ; r1    mask byte for clock pin
@@ -50,31 +52,34 @@ sendNokiaBufferAsm:
 
 ; r2 is low
 ; r3 is high
+
+
+
+.dohigh:                                    ; C6
+    str r6, [r3, #0]    ; set data pin  hi  ; C8
+    lsrs r7, r7, #1     ; r6 >>= 1          ; C9
+    str r1, [r3, #0]    ; clock -> high     ; C11    
+    beq .nextbyte                           ; C12           
+ .common:                                   ; C0
+    tst r7, r0                              ; C1
+    str r1, [r2, #0]    ; clock pin := lo   ; C3
+    bne .dohigh  ; r3 is high set so...     ; C4
+.dolow
+    str r6, [r2, #0]  ; set data pin low    ; C6
+    lsrs r7, r7, #1     ; r6 >>= 1          ; C7
+    str r1, [r3, #0]    ; clock -> high     ; C9
+    bne .common                             ; C12           
+    ; not just a bit - need new byte
+.nextbyte:
+    adds r4, #1         ; r4++       C9
+    subs r5, #1         ; r5--       C10
+    beq .stop          ; if (r5=0) 
 .start:                                     ; C0
     movs r7, #0x80      ; reset mask        ; C1
-    ldrb r0, [r4, #0]  ; r0 := *r4          ; C4
-.common:
-    str r1, [r2, #0]    ; clock pin := lo   ; C6
-    tst r7, r0                              ; C7
-    bne .dohigh  ; r3 is high set so...     ; C8
-    str r6, [r2, #0]  ; set data pin low    ; C10
-    lsrs r7, r7, #1     ; r6 >>= 1          ; C11
-    str r1, [r3, #0]    ; clock -> high     ; C13
-    bne .common                             ; C16           
-    ; not just a bit - need new byte
-    adds r4, #1         ; r4++       C9
-    subs r5, #1         ; r5--       C10
-    bne .start          ; if (r5>=0) goto .start  C11
-    b .stop
-.dohigh:                                    ; C10
-    str r6, [r3, #0]    ; set data pin  hi  ; C12
-    lsrs r7, r7, #1     ; r6 >>= 1          ; C13
-    str r1, [r3, #0]    ; clock -> high     ; C15
-    bne .common                             ; C18           
-    ; not just a bit - need new byte
-    adds r4, #1         ; r4++       C9
-    subs r5, #1         ; r5--       C10
-    bne .start          ; if (r5>=0) goto .start  C11
+    ldrb r0, [r4, #0]  ; r0 := *r4          ; C3
+    b .common
+    
+
 .stop:
     str r1, [r2, #0]    ; clock pin := lo
 
