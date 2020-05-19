@@ -16,13 +16,13 @@ sendNokiaBufferAsm:
     mov r4, r0          ; r4 points to the data
     
     ; setup 1st pin as digital (data)
-    mov r0, r6
-    movs r1, #0
-    bl pins::digitalWritePin
+ ;   mov r0, r6
+ ;   movs r1, #0
+ ;   bl pins::digitalWritePin
     ; setup 2nd pin as digital (clock)
-    mov r0, r7
-    movs r1, #0
-    bl pins::digitalWritePin
+ ;   mov r0, r7
+ ;   movs r1, #0
+ ;   bl pins::digitalWritePin
 
     ; load pin address
     mov r0, r6
@@ -41,39 +41,40 @@ sendNokiaBufferAsm:
     ; REGISTERS:
     ; r0    to bloaded with buffer data
     ; r1    mask byte for clock pin
-    ; r2    address for set  low
-    ; r3    used for temp storage of clr/set addr for pins
+    ; r2    address for set pins low
+    ; r3    address for set pins high
     ; r4    buffer address
     ; r5    counter
     ; r6    mask byte for data pin
-    ; r7    bitmask
+    ; r7    bitmask for bit testing
 
 ; r2 is low
 ; r3 is high
-.start2:
-    movs r7, #0x80      ; reset mask 
-    ldrb r0, [r4, #0]  ; r0 := *r4               ; C2
-.common2:
-    str r1, [r2, #0]    ; clock pin := lo     ; C1
-    nop
-    nop
-    tst r7, r0     
-    bne .dohigh     ; r3 is already high set so move on...  ; C1 + p
-.dolow:
-    str r6, [r2, #0]
-    b .setclockhigh
-.dohigh:
-    str r6, [r3, #0]    ; set data pin                  ; C2
-.setclockhigh:
-    nop
-    nop
-    lsrs r7, r7, #1     ; r6 >>= 1   C7             ; C1
-    str r1, [r3, #0]    ; clock pin := high             ; C2
-    bne .common2       ;            C8             ; C1 + p
+.start:                                     ; C0
+    movs r7, #0x80      ; reset mask        ; C1
+    ldrb r0, [r4, #0]  ; r0 := *r4          ; C4
+.common:
+    str r1, [r2, #0]    ; clock pin := lo   ; C6
+    tst r7, r0                              ; C7
+    bne .dohigh  ; r3 is high set so...     ; C8
+    str r6, [r2, #0]  ; set data pin low    ; C10
+    lsrs r7, r7, #1     ; r6 >>= 1          ; C11
+    str r1, [r3, #0]    ; clock -> high     ; C13
+    bne .common                             ; C16           
     ; not just a bit - need new byte
     adds r4, #1         ; r4++       C9
     subs r5, #1         ; r5--       C10
-    bne .start2          ; if (r5>=0) goto .start  C11
+    bne .start          ; if (r5>=0) goto .start  C11
+    b .stop
+.dohigh:                                    ; C10
+    str r6, [r3, #0]    ; set data pin  hi  ; C12
+    lsrs r7, r7, #1     ; r6 >>= 1          ; C13
+    str r1, [r3, #0]    ; clock -> high     ; C15
+    bne .common                             ; C18           
+    ; not just a bit - need new byte
+    adds r4, #1         ; r4++       C9
+    subs r5, #1         ; r5--       C10
+    bne .start          ; if (r5>=0) goto .start  C11
 .stop:
     str r1, [r2, #0]    ; clock pin := lo
 
