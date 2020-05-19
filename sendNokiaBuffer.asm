@@ -64,10 +64,10 @@ sendNokiaBufferAsm:
 .common:                      
     mov r3, r11     ; prepare r3 for clock low      ; C1 
     str r1, [r3, #0]    ; clock pin := lo
-    nop
-    nop
-    nop
-    nop
+    movs r2, 0
+.del1:
+    subs r2, #32
+    bne .del1
 	mov r3, r9      ; get the setaddr for datapin   ; C1
     tst r7, r0     
     bne .nextone                                    ; C1 + p
@@ -78,13 +78,13 @@ sendNokiaBufferAsm:
     nop
     nop
     nop
-    mov r3, r12     ; get the setaddr for clock     ; C1   
-    lsrs r7, r7, #1     ; r6 >>= 1   C7             ; C1
+    mov r3, r12     ; get the setaddr for clock     ; C1 
     str r1, [r3, #0]    ; clock pin := high             ; C2
-    nop
-    nop
-    nop
-    nop
+    movs r2, 0
+.del2:
+    subs r2, #32
+    bne .del2
+    lsrs r7, r7, #1     ; r6 >>= 1   C7             ; C1
     bne .common       ;            C8             ; C1 + p
     ; not just a bit - need new byte
     adds r4, #1         ; r4++       C9
