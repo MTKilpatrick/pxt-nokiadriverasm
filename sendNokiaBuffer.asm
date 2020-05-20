@@ -52,7 +52,14 @@ sendSPIBufferAsm:
     str r6, [r2, #0]  ; set data pin low    ; C6
     lsrs r7, r7, #1     ; r6 >>= 1          ; C7
     str r1, [r3, #0]    ; clock -> high     ; C9
-    bne .common                             ; C12   
+    beq .nextbyte                           ; C10
+    tst r7, r0                              ; C11
+    str r1, [r2, #0]    ; clock pin := lo   ; C13
+    bne .dohigh  ; r3 is high set so...     ; C14
+    str r6, [r2, #0]  ; set data pin low    ; C16
+    lsrs r7, r7, #1     ; r6 >>= 1          ; C17
+    str r1, [r3, #0]    ; clock -> high     ; C19
+    bne .common                             ; C22
 .nextbyte:
     adds r4, #1         ; r4++       C9
     subs r5, #1         ; r5--       C10
