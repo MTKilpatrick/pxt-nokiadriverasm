@@ -2,11 +2,12 @@
 
 namespace nokiadriverasm {
 
-    //% shim=sendSPIBufferAsm
-    void sendSPIBufferAsm(Buffer b, int p1, int p2) {
-    }
+    //% shim=nokiadriverasm::sendSPIBufferAsm
+    void sendSPIBufferC(Buffer b, int p1, int p2) {
+            }
 
-    //% shim=sendSPIByteAsm
-    void sendSPIByteAsm(int b, int p1, int p2) {
-    }
+
+    //% shim=nokiadriverasm::sendSPIByteAsm
+    void sendSPIByteC(int b, int p1, int p2) {
+        }
 }
